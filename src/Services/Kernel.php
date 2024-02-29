@@ -17,14 +17,21 @@ class Kernel
         $botUsername = $_ENV['BOT_USERNAME'];
         $botApiKey = $_ENV['BOT_API_KEY'];
 
+        $mysql_credentials = [
+            'host'     => $_ENV('DATABASE_HOST'),
+            'user'     => $_ENV('DATABASE_USERNAME'),
+            'password' => $_ENV('DATABASE_PASSWORD'),
+            'database' => $_ENV('DATABASE'),
+        ];
+
         try {
             $telegram = new Telegram($botApiKey, $botUsername);
+            $telegram->enableMySql($mysql_credentials);
 
             //$handler = new MessageHandler();
             echo "Bot is running\n";
             while (true) {
                 try {
-                    $telegram->useGetUpdatesWithoutDatabase();
 
                     $response = $telegram->handleGetUpdates();
                     $result = $response->getResult();

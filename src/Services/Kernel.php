@@ -9,6 +9,7 @@ use Longman\TelegramBot\Request;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Longman\TelegramBot\Exception\TelegramException;
 use Longman\TelegramBot\Telegram;
+use SendMessages\Handlers\MessageHandler;
 use Throwable;
 
 class Kernel
@@ -46,15 +47,10 @@ class Kernel
                     $response = $telegram->handleGetUpdates();
                     $result = $response->getResult();
 
+                    $handler = new MessageHandler();
+
                     foreach ($result as $update) {
-                        $chat = $update->getMessage()->getChat();
-
-
-
-                        Request::sendMessage([
-                            "chat_id" => "@devchannel2",
-                            'text' => 'FINALLY WORKS!!!!!!!!!!!'
-                        ]);
+                        $handler->handleUpdate($update);
                     }
                     sleep(1);
 

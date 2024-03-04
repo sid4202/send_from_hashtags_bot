@@ -4,15 +4,32 @@ namespace SendMessages\Handlers;
 
 use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Entities\Update;
+use Longman\TelegramBot\Request;
+use SendMessages\Models\User;
+use SendMessages\Models\UserChat;
+
 class MessageHandler
 {
     public function handleUpdate(Update $update)
     {
         $message = $update->getMessage();
 
-        if ($message !== null)
+        $isPost = ($update->getChannelPost() !== null);
+
+        if ($isPost)
         {
-            $this->handleMessage($message);
+            $users = User::all();
+
+            foreach ($users as $user)
+            {
+               $chatId = UserChat::query()->where('user_id','=',$user->id)->first()->chat_id;
+
+               Request::forwardMessage([
+                   'chat_id' => $chatId,
+                   'from_chat_id' => $update->getChannelPost()->getChat()->getId(),
+                   'message_id' => $update->getChannelPost()->getMessageId()
+               ]);
+            }
         }
     }
 

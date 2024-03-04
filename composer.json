@@ -1,7 +1,8 @@
 {
     "require": {
         "longman/telegram-bot": "^0.82.0",
-        "vlucas/phpdotenv": "^5.6"
+        "vlucas/phpdotenv": "^5.6",
+        "illuminate/database": "^10.46"
     },
     "autoload": {
         "psr-4": {

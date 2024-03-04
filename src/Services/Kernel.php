@@ -32,6 +32,12 @@ class Kernel
             $telegram = new Telegram($botApiKey, $botUsername);
             $telegram->enableMySql($mysql_credentials);
 
+            $telegram->setCommandConfig('sendtochannel', [
+                'your_channel' => [
+                    '@devchannel2',
+                ]
+            ]);
+
             //$handler = new MessageHandler();
             echo "Bot is running\n";
             while (true) {
@@ -43,9 +49,11 @@ class Kernel
                     foreach ($result as $update) {
                         $chat = $update->getMessage()->getChat();
 
+
+
                         Request::sendMessage([
-                            'chat_id' => $chat->getId(),
-                            'text' => 'Hello world!!!'
+                            "chat_id" => "@devchannel2",
+                            'text' => 'FINALLY WORKS!!!!!!!!!!!'
                         ]);
                     }
                     sleep(1);

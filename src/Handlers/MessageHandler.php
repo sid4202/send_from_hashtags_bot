@@ -6,7 +6,6 @@ use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Request;
 use SendMessages\Models\User;
-use SendMessages\Models\UserChat;
 
 class MessageHandler
 {
@@ -22,7 +21,7 @@ class MessageHandler
 
             foreach ($users as $user)
             {
-               $chatId = UserChat::query()->where('user_id','=',$user->id)->first()->chat_id;
+               $chatId = $user->getUserChat()->first()->chat_id;
 
                Request::forwardMessage([
                    'chat_id' => $chatId,

@@ -1,6 +1,8 @@
 <?php
 
 namespace SendMessages\Commands;
+
+use Longman\TelegramBot\Entities\Update;
 abstract class AbstractCommand
 {
     protected Update $update;

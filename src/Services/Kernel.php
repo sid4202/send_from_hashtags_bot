@@ -9,6 +9,7 @@ use Longman\TelegramBot\Request;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Longman\TelegramBot\Exception\TelegramException;
 use Longman\TelegramBot\Telegram;
+use SendMessages\Commands\StartCommand;
 use SendMessages\Handlers\MessageHandler;
 use Throwable;
 
@@ -38,6 +39,7 @@ class Kernel
                     '@devchannel2',
                 ]
             ]);
+
 
             //$handler = new MessageHandler();
             echo "Bot is running\n";

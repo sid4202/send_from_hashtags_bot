@@ -9,6 +9,8 @@ use SendMessages\Commands\ParentTypeCallbackCommand;
 use SendMessages\Commands\PupilTypeCallbackCommand;
 use SendMessages\Commands\StartCommand;
 use SendMessages\Models\User;
+use SendMessages\Models\UserChat;
+use SendMessages\Models\UserType;
 
 class MessageHandler
 {
@@ -18,29 +20,15 @@ class MessageHandler
 
         $isPost = ($update->getChannelPost() !== null);
 
-        if ($message !== null)
-        {
+        if ($message !== null) {
             $this->handleMessage($message, $update);
         }
 
-        if ($isPost)
-        {
-            $users = User::all();
-
-            foreach ($users as $user)
-            {
-               $chatId = $user->getUserChat()->first()->chat_id;
-
-               Request::forwardMessage([
-                   'chat_id' => $chatId,
-                   'from_chat_id' => $update->getChannelPost()->getChat()->getId(),
-                   'message_id' => $update->getChannelPost()->getMessageId()
-               ]);
-            }
+        if ($isPost) {
+            $this->handlePost($update);
         }
 
-        if ($update->getCallbackQuery() !== null)
-        {
+        if ($update->getCallbackQuery() !== null) {
             $this->handleCallback($update);
         }
     }
@@ -49,8 +37,7 @@ class MessageHandler
     {
         $text = $message->getText();
 
-        if ($text = '/start')
-        {
+        if ($text == '/start') {
             $command = new StartCommand();
 
             $command->setUpdate($update);
@@ -70,5 +57,37 @@ class MessageHandler
         $callbackCommand->setUpdate($update);
         $callbackCommand->parseCallbackData();
         $callbackCommand->execute();
+    }
+
+    private function handlePost(Update $update)
+    {
+        $post = $update->getChannelPost();
+
+        var_dump($post->getText());
+
+        if (str_contains($post->getText(), '#ученик'))
+            $type = 'pupil';
+        elseif (str_contains($post->getText(), '#родитель'))
+            $type = 'parent';
+        else
+            return;
+
+
+        $users = UserType::query()
+            ->get()
+            ->where('type', '=', $type);
+
+        var_dump($users);
+
+        foreach ($users as $user) {
+
+            $chatId = UserChat::query()->get()->where('user_id', '=', $user->user_id)->first()->chat_id;
+
+            Request::forwardMessage([
+                'chat_id' => $chatId,
+                'from_chat_id' => $update->getChannelPost()->getChat()->getId(),
+                'message_id' => $update->getChannelPost()->getMessageId()
+            ]);
+        }
     }
 }

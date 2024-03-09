@@ -3,6 +3,7 @@
 require_once './vendor/autoload.php';
 
 use Illuminate\Database\Capsule\Manager;
+use Illuminate\Database\Schema\Blueprint;
 
 $kernel = new SendMessages\Services\Kernel();
 $kernel->connectDatabase();
@@ -15,3 +16,6 @@ foreach (explode(";\n", $rawQuery) as $query) {
         $connection->statement($query);
 }
 }
+
+
+

@@ -9,6 +9,6 @@ $kernel = new SendMessages\Services\Kernel();
 $kernel->connectDatabase();
 
 Manager::schema()->create('user_type', function (Blueprint $table) {
-    $table->integer('user_id');
+    $table->bigInteger('user_id');
     $table->string('type');
 });

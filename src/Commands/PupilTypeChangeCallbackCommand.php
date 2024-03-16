@@ -6,15 +6,19 @@ use Longman\TelegramBot\Request;
 use SendMessages\Commands\Models\User;
 use SendMessages\Commands\Models\UserType;
 
-class PupilTypeCallbackCommand extends AbstractCallbackCommand
+class PupilTypeChangeCallbackCommand extends AbstractCallbackCommand
 {
     public function execute()
     {
         $userId = User::query()
             ->get()
-            ->where('username', '=', $this->callbackData['data']['username'])
+            ->where('username', '=', $this->update->getCallbackQuery()->getMessage()->getChat()->getUsername())
             ->first()
             ->id;
+
+        UserType::query()
+            ->where('user_id', '=', $userId)
+            ->delete();
 
         UserType::query()->create([
             'user_id' => $userId,

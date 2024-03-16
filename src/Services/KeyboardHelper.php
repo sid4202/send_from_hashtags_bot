@@ -18,7 +18,7 @@ class KeyboardHelper
         ];
     }
 
-    public function getAllButtonsButton(): string
+    public function getAllButtons(): string
     {
         return json_encode($this->keyboard);
     }

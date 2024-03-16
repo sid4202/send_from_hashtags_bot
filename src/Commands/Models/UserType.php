@@ -1,6 +1,6 @@
 <?php
 
-namespace SendMessages\Models;
+namespace SendMessages\Commands\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

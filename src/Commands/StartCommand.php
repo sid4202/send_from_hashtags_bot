@@ -22,7 +22,7 @@ public function execute() {
     Request::sendMessage([
         'chat_id' => $this->update->getMessage()->getChat()->getId(),
         'text' => 'Этот бот пересылает сообщения из определенных чатов, выберите, насчет чего вам присылать сообщения',
-        'reply_markup' => $keyboard->getAllButtonsButton()
+        'reply_markup' => $keyboard->getAllButtons()
     ]);
 }
 

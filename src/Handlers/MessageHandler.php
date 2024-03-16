@@ -5,12 +5,16 @@ namespace SendMessages\Handlers;
 use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Request;
+use SendMessages\Commands\ChangeUserTypeCommand;
+use SendMessages\Commands\Models\UserChat;
+use SendMessages\Commands\Models\UserType;
 use SendMessages\Commands\ParentTypeCallbackCommand;
+use SendMessages\Commands\ParentTypeChangeCallbackCommand;
 use SendMessages\Commands\PupilTypeCallbackCommand;
+use SendMessages\Commands\PupilTypeChangeCallbackCommand;
 use SendMessages\Commands\StartCommand;
-use SendMessages\Models\User;
-use SendMessages\Models\UserChat;
-use SendMessages\Models\UserType;
+use SendMessages\Services\KeyboardHelper;
+use SendMessages\Commands\Models\User;
 
 class MessageHandler
 {
@@ -52,6 +56,12 @@ class MessageHandler
             $callbackCommand = new PupilTypeCallbackCommand();
         } elseif ($callback_data['callback'] === 'parentType') {
             $callbackCommand = new ParentTypeCallbackCommand();
+        } elseif ($callback_data['callback'] === 'changeUserType') {
+            $callbackCommand = new ChangeUserTypeCommand();
+        } elseif ($callback_data['callback'] === 'parentTypeChange') {
+            $callbackCommand = new ParentTypeChangeCallbackCommand();
+        } elseif ($callback_data['callback'] === 'pupilTypeChange') {
+            $callbackCommand = new PupilTypeChangeCallbackCommand();
         }
 
         $callbackCommand->setUpdate($update);
@@ -62,7 +72,6 @@ class MessageHandler
     private function handlePost(Update $update)
     {
         $post = $update->getChannelPost();
-
         var_dump($post->getText());
 
         if (str_contains($post->getText(), '#ученик'))
@@ -77,16 +86,29 @@ class MessageHandler
             ->get()
             ->where('type', '=', $type);
 
-        var_dump($users);
-
         foreach ($users as $user) {
 
             $chatId = UserChat::query()->get()->where('user_id', '=', $user->user_id)->first()->chat_id;
 
+            $keyboard = new KeyboardHelper();
+
+            $keyboard->createButton("Сменить", "changeUserType", [
+                'username' => User::query()
+                ->get()
+                ->where('id', '=', $user->user_id)->first()
+                ->username
+            ]);
+
             Request::forwardMessage([
                 'chat_id' => $chatId,
                 'from_chat_id' => $update->getChannelPost()->getChat()->getId(),
-                'message_id' => $update->getChannelPost()->getMessageId()
+                'message_id' => $update->getChannelPost()->getMessageId(),
+            ]);
+
+            Request::sendMessage([
+                'text' => "Хотите ли вы поменять хэштег, по которому вам приходят новостные посты, если да - нажните кнопку",
+                'chat_id' => $chatId,
+                'reply_markup' => $keyboard->getAllButtons()
             ]);
         }
     }
